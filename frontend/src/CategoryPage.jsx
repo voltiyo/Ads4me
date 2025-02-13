@@ -20,7 +20,7 @@ export default function CategoryPage(){
     },[Category])
 
 
-    document.title = "Ads4me - " + categ.name
+    document.title = "Ads4me - " + category.name
 
     return(
         <div>
@@ -31,6 +31,9 @@ export default function CategoryPage(){
                 {
                     category.products ? 
                     category.products.map((product, index) => {
+                        if (product.active === false) {
+                            return 
+                        }
                         return (
                             <div className="w-[22%]" key={index}>
                                 <Product data={product} key={index}/>

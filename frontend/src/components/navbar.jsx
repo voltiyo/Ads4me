@@ -25,9 +25,9 @@ export default function NavBar(country){
             }}>
                 <img src="/logo.png" className="w-56"/>
             </div>
-            <div className="flex gap-2 items-center justify-center">
+            <div className="flex gap-2 items-center justify-center w-[40%] ">
                 <div 
-                className="[&_*]:transition-all [&_*]:focus:placeholder:text-green-700 "
+                className="[&_*]:transition-all w-[80%]  [&_*]:focus:placeholder:text-green-700 "
                 onFocus={(e) => {
                     e.target.style = "border: 1px solid oklch(0.527 0.154 150.069);"
                 }}
@@ -48,10 +48,7 @@ export default function NavBar(country){
                 <DropdownMenu defaultOption={country}/>
             </div>
             <div className="flex items-center justify-center gap-4">
-                <div onClick={() => {window.location.href = `/${country.country}/professional-plan`}} className="flex items-center justify-center gap-2 text-white hover:text-green-500 transition-all duration-300 cursor-pointer">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" fillRule="evenodd" d="M7.25,6.25 L7.25,5 C7.25,3.48121694 8.48121694,2.25 10,2.25 L14,2.25 C15.5187831,2.25 16.75,3.48121694 16.75,5 L16.75,6.25 L20,6.25 C21.5187831,6.25 22.75,7.48121694 22.75,9 L22.75,19 C22.75,20.5187831 21.5187831,21.75 20,21.75 L4,21.75 C2.48121694,21.75 1.25,20.5187831 1.25,19 L1.25,9 C1.25,7.48121694 2.48121694,6.25 4,6.25 L7.25,6.25 Z M8.75,6.25 L15.25,6.25 L15.25,5 C15.25,4.30964406 14.6903559,3.75 14,3.75 L10,3.75 C9.30964406,3.75 8.75,4.30964406 8.75,5 L8.75,6.25 Z M4,7.75 C3.30964406,7.75 2.75,8.30964406 2.75,9 L2.75,19 C2.75,19.6903559 3.30964406,20.25 4,20.25 L20,20.25 C20.6903559,20.25 21.25,19.6903559 21.25,19 L21.25,9 C21.25,8.30964406 20.6903559,7.75 20,7.75 L4,7.75 Z"></path></svg>
-                    The Professional Plan
-                </div>
+                
 
                 <div onClick={() => {window.location.href = `/${country.country}/my-ads`}} className="flex items-center justify-center gap-2 text-white hover:text-green-500 transition-all duration-300 cursor-pointer">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" fillRule="evenodd" d="M3,2.25 L10,2.25 C10.4142136,2.25 10.75,2.58578644 10.75,3 L10.75,10 C10.75,10.4142136 10.4142136,10.75 10,10.75 L3,10.75 C2.58578644,10.75 2.25,10.4142136 2.25,10 L2.25,3 C2.25,2.58578644 2.58578644,2.25 3,2.25 Z M3.75,9.25 L9.25,9.25 L9.25,3.75 L3.75,3.75 L3.75,9.25 Z M14,2.25 L21,2.25 C21.4142136,2.25 21.75,2.58578644 21.75,3 L21.75,10 C21.75,10.4142136 21.4142136,10.75 21,10.75 L14,10.75 C13.5857864,10.75 13.25,10.4142136 13.25,10 L13.25,3 C13.25,2.58578644 13.5857864,2.25 14,2.25 Z M14.75,9.25 L20.25,9.25 L20.25,3.75 L14.75,3.75 L14.75,9.25 Z M14,13.25 L21,13.25 C21.4142136,13.25 21.75,13.5857864 21.75,14 L21.75,21 C21.75,21.4142136 21.4142136,21.75 21,21.75 L14,21.75 C13.5857864,21.75 13.25,21.4142136 13.25,21 L13.25,14 C13.25,13.5857864 13.5857864,13.25 14,13.25 Z M14.75,20.25 L20.25,20.25 L20.25,14.75 L14.75,14.75 L14.75,20.25 Z M3,13.25 L10,13.25 C10.4142136,13.25 10.75,13.5857864 10.75,14 L10.75,21 C10.75,21.4142136 10.4142136,21.75 10,21.75 L3,21.75 C2.58578644,21.75 2.25,21.4142136 2.25,21 L2.25,14 C2.25,13.5857864 2.58578644,13.25 3,13.25 Z M3.75,20.25 L9.25,20.25 L9.25,14.75 L3.75,14.75 L3.75,20.25 Z"></path></svg>

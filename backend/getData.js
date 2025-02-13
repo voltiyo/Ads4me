@@ -72,6 +72,7 @@ export async function getCategories() {
     let new_data = await Promise.all(
       data.map(async (category) => {
         category.products = await getProducts(category.category_id);
+        category.promos = await getPromosByCateg(category.category_id);
         return category; // Ensure we return the modified category
       })
     );
@@ -106,7 +107,7 @@ export async function GetUser(user_id) {
     await client.release();
     return data.rows[0];
   } catch (err) {
-    console.error('Error saving data:', err);
+    return {success: false}
   } 
 }
 
@@ -123,9 +124,9 @@ export async function SaveProduct(data,files) {
   const location = data.location
   
   try {
-    const query = `INSERT INTO products (product_id, user_id, category_id, name, description, price,quantity, location) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`;
+    const query = `INSERT INTO products (product_id, user_id, category_id, name, description, price,quantity, location, active) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`;
 
-    await client.query(query,[productId,userId,categoryId,name,description,price,quantity,location]);
+    await client.query(query,[productId,userId,categoryId,name,description,price,quantity,location, false]);
 
     for (const file of files) {
       const imgQuery = `INSERT INTO images (product_id, path) VALUES ($1, $2)`;
@@ -138,6 +139,36 @@ export async function SaveProduct(data,files) {
     await client.release();
     return {success: true, product_id: productId}
   } catch (err) {
+    return {success: false}
+  } 
+}
+
+export async function Activate(Id) {
+  const client = await pool.connect();
+  try {
+    const query = `UPDATE products SET active = true where product_id = $1`;
+
+    await client.query(query,[Id]);
+    
+    await client.release();
+    return {success: true}
+  } catch (err) {
+    console.log(err)
+    return {success: false}
+  } 
+}
+
+export async function Inactivate(Id) {
+  const client = await pool.connect();
+  try {
+    const query = `UPDATE products SET active = false where product_id = $1`;
+
+    await client.query(query,[Id]);
+    
+    await client.release();
+    return {success: true}
+  } catch (err) {
+    console.log(err)
     return {success: false}
   } 
 }
@@ -361,4 +392,146 @@ export async function CreateConv(person1, person2) {
   
      await client.release();
   return {conversation_id: convID}
+}
+
+
+
+export async function AdminLogin(username, password) {
+  const client = await pool.connect();
+  const Hash = hashPassword(password);
+
+  const query = "SELECT * FROM admins where username = $1";
+  const response = await client.query(query, [username]);
+  const data = response.rows;
+  
+  await client.release();
+  for (const admin of data) {
+    if (admin.password_hash === Hash) {
+      return {success: true}
+    }
+  }
+  return {success: false, message: "incorrect password or username"}
+
+}
+
+export async function GetAds() {
+  const client = await pool.connect();
+  const response = await client.query("SELECT * FROM products");
+  await client.release();
+  return response.rows
+}
+export async function GetUsers() {
+  const client = await pool.connect();
+  const response = await client.query("SELECT * FROM users");
+  await client.release();
+  return response.rows
+}
+
+
+export async function DeleteUser(Id) {
+  try {
+    const client = await pool.connect();
+    await client.query("DELETE FROM users where user_id = $1", [Id])
+    await client.release();
+    return {success: true}
+  } catch {
+    return {success: false}
+  }
+}
+
+export async function DeleteCategory(Id) {
+  try {
+    const client = await pool.connect();
+    const result = await client.query("DELETE FROM categories WHERE category_id = $1", [Id]);
+    await client.release();
+    
+    return { success: result.rowCount > 0 };
+  } catch (error) {
+    console.error("Error deleting category:", error);
+    return { success: false };
+  }
+}
+
+export async function CreateCategory(name,description) {
+  try {
+    const client = await pool.connect();
+    await client.query("INSERT INTO categories (name, description) VALUES ($1, $2)", [name, description]);
+    await client.release();
+    
+    return { success: true };
+  } catch (error) {
+    console.error("Error Creating Category:", error);
+    return { success: false };
+  }
+}
+
+export async function CreatePlan(name, description, price, Features, Expiring) {
+  try {
+    const client = await pool.connect();
+    await client.query("INSERT INTO plans (name, description, price, features, expiring_at) VALUES ($1, $2, $3, $4, $5)", [name, description, price, Features, Expiring]);
+    await client.release();
+    
+    return { success: true };
+  } catch (error) {
+    console.error("Error Creating plan:", error);
+    return { success: false };
+  }
+}
+
+export async function GetPlans() {
+  const client = await pool.connect();
+  const response = await client.query("SELECT * FROM plans");
+  await client.release();
+  
+  return response.rows;
+
+}
+
+export async function GetPlanById(Id) {
+  const client = await pool.connect();
+  const response = await client.query("SELECT * FROM plans where plan_id = $1", [Id]);
+  await client.release();
+  
+  return response.rows[0];
+
+}
+
+export async function DeletePlan(Id) {
+  try {
+    const client = await pool.connect();
+    const result = await client.query("DELETE FROM plans WHERE plan_id = $1", [Id]);
+    await client.release();
+    
+    return { success: result.rowCount > 0 };
+  } catch (error) {
+    console.error("Error deleting Plan:", error);
+    return { success: false };
+  }
+}
+
+export async function getPromos() {
+  const client = await pool.connect();
+  const result = await client.query("SELECT * FROM promotions")
+  await client.release();
+  return result.rows
+}
+
+export async function setPromoted(Id, pack, method, amount, exp) {
+  const client = await pool.connect();
+  await client.query("INSERT INTO promotions (ad_id, package, pay_method, amount, expiring_at ) VALUES ($1, $2, $3, $4, $5)", [Id, pack, method, amount, exp])
+  await client.release();
+}
+
+async function getPromosByCateg(categ) {
+  const client = await pool.connect();
+  const result = await client.query("SELECT * FROM promotions")
+  let ads = result.rows;
+  let new_data = []
+  for (const ad of ads) {
+    const data = await client.query("SELECT * FROM products where category_id = $1 AND product_id = $2 ", [categ, ad.ad_id]);
+    new_data.push(data.rows[0]);
+  }
+  await client.release();
+  
+  return new_data;
 }

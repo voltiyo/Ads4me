@@ -1,23 +1,10 @@
-import { useParams } from "react-router-dom";
-import NavBar from "./components/navbar";
-import { useEffect, useState } from "react";
+import { useEffect, useState } from "react"
+import { useParams } from "react-router-dom"
+import { Feature } from "./ProfessionalPlan"
 
-export function Feature({ feature }){
-    return(
-        <div className="flex items-center justify-center gap-4">
-            <img src="/checked.png" alt="feature" className="size-8" />
-            <p className="text-2xl font-semibold text-white">
-                {feature}
-            </p>
-        </div>
-    )
-}
-
-export default function ProfessionalPlanPage(){
-    const { country } = useParams();
-    document.title = "Ads4me - Professional Plan";
-    const [plans, setPlans] = useState([]);
-
+export default function Promote() {
+    const [plans, setPlans] = useState([])
+    const { product_id } = useParams()
     useEffect(() => {
         async function GetPlans() {
             const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/getPlans`);
@@ -25,17 +12,16 @@ export default function ProfessionalPlanPage(){
             setPlans(data)
         }
         GetPlans();
-    }, []);
-
-    return(
+    }, [])
+    
+    return (
         <div>
-            <NavBar country={country}/>
-            <div className="flex items-center justify-around my-20">
-                {
+            <h1 className="text-5xl text-center text-white font-bold my-10">Promote</h1>
+            <div className="flex items-center justify-around flex-wrap my-20">
+                {   
                     plans.length > 0 ? plans.map((plan, index) => {
                         const features = plan.features.split(",");
-                        console.log(features)
-                        
+
                         return (
                             <div className="relative bg-green-700 w-[40%] flex items-center p-4 rounded-lg justify-center flex-col">
                                 <p className="absolute left-5 top-5 text-4xl font-black text-white">{plan.price} USD</p>
@@ -51,7 +37,7 @@ export default function ProfessionalPlanPage(){
                                     }
                                 </div>
                                 <div className="w-full mt-8">
-                                    <button className="w-full border-2 text-white text-xl font-bold rounded-lg hover:text-green-700 hover:bg-white transition-all duration-500 hover:border-white cursor-pointer">Take it</button>
+                                    <button className="w-full border-2 text-white text-xl font-bold rounded-lg hover:text-green-700 hover:bg-white transition-all duration-500 hover:border-white cursor-pointer" onClick={() => { window.location.href = `/checkout/${product_id}/${plan.plan_id}` }}>Take it</button>
                                 </div>
                             </div>
                         )
@@ -61,9 +47,7 @@ export default function ProfessionalPlanPage(){
                         No Plan Found !
                     </div>
                 }
-            
             </div>
         </div>
-        
     )
 }

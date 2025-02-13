@@ -1,16 +1,21 @@
-import { getCategories, getProducts, getProduct, getImages, GetUser, SaveProduct, CreateUser, Login, getAdByUserId, deleteAdByProductId, EditAd, SearchAd, getMessages, getConversation, GetConversationById, SendMessage, SearchConv, CreateConv } from './getData.js';
+import { getCategories, getProducts, getProduct, getImages, GetUser, SaveProduct, CreateUser, Login, getAdByUserId, deleteAdByProductId, EditAd, SearchAd, getMessages, getConversation, GetConversationById, SendMessage, SearchConv, CreateConv, AdminLogin, GetAds, GetUsers, DeleteUser, DeleteCategory, CreateCategory, CreatePlan, GetPlans, DeletePlan, Activate, Inactivate, getPromos, GetPlanById, setPromoted } from './getData.js';
 import e from 'express';
 import cors from 'cors';
 import path from "path";
 import multer from 'multer';
 import { Server as socketIo } from 'socket.io';
 import http from 'http';
+import Stripe from "stripe";
+import dotenv from "dotenv"
+
+dotenv.config()
 
 
 const app = e();
 app.use(cors())
 app.use(e.json())
 app.use(e.urlencoded({ extended: true }));
+const stripe = new Stripe(process.env.STRIPE_SECRET);
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -39,7 +44,10 @@ app.get("/getProduct/:productId", async (req,res) =>{
     const data = await getProduct(productId)
     res.send(data[0])
 })
-
+app.get("/getPlan/:plan_id", async (req, res) => {
+  const response = await GetPlanById(req.params.plan_id);
+  res.send(response)
+})
 
 app.get("/getImages/:productId", async (req,res) => {
   try{
@@ -61,11 +69,45 @@ app.post("/saveProduct", upload.array("images",4), async (req,res) => {
   res.send(response);
 })
 
+app.post("/saveCategory", async (req, res) => {
+  const {name, description} = req.body;
+  const response = await CreateCategory(name, description);
+  res.send(response)
+})
+
+app.post("/savePlan", async (req, res) => {
+  const response = await CreatePlan(req.body.name, req.body.description, req.body.price, req.body.Features, req.body.Expiring)
+  res.send(response)
+})
+app.get("/getPlans", async (req, res) => {
+  const response = await GetPlans()
+  res.send(response)
+})
+app.get("/DeletePlan/:planId", async (req, res) => {
+  const response = await DeletePlan(req.params.planId)
+  res.send(response)
+})
+
+app.get("/DeleteCategory/:CategId", async (req, res ) => {
+  const categoryId = req.params.CategId;
+  const response = await DeleteCategory(categoryId);
+  res.send(response)
+})
+
 app.get("/getOwner/:userId", async (req,res) => {
   const userId = req.params.userId;
   const data = await GetUser(userId);
+  console.log(data)
   res.send(data)
   
+})
+app.get("/Activate/:Id", async (req, res ) => {
+  const data = await Activate(req.params.Id);
+  res.send(data)
+})
+app.get("/Inactivate/:Id", async (req, res ) => {
+  const data = await Inactivate(req.params.Id);
+  res.send(data)
 })
 
 app.post("/login", async (req,res) => {
@@ -148,7 +190,61 @@ app.get("/conversation/:convId", async (req,res) => {
   res.send(response);
 })
 
+app.post("/admin/login", async (req,res) => {
+  const { username, password } = req.body;
+  const response = await AdminLogin(username, password);
+  res.send(response)
+})
+app.post("/api/pay", async (req, res) => {
+  try {
+    const { paymentMethodId, return_url, amount, ad_id, pack, exp } = req.body;
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: amount, // 10 USD (amount in cents)
+      currency: "usd",
+      payment_method: paymentMethodId,
+      return_url: return_url ,
+      confirm: true,
+    });
 
+
+    const method = await stripe.paymentMethods.retrieve(paymentMethodId);
+    const brand = method.card.brand
+    let expire_date = new Date()
+    expire_date.setDate(expire_date.getDate() + exp)
+    
+    await setPromoted(ad_id, pack, brand, amount, expire_date)
+
+    console.log(req.body)
+    res.json({ success: true, paymentIntent });
+  } catch (error) {
+    console.log(error)
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+app.get("/getPromos", async (req, res) => {
+  const response = await getPromos();
+  res.send(response)
+})
+
+app.post("/setPromo", async (req, res) => {
+  console.log(req.body)
+})
+
+
+app.get("/Ads", async (req,res) => {
+  const response = await GetAds();
+  res.send(response);
+})
+
+
+app.get("/AllUsers", async (req, res) => {
+  const response = await GetUsers();
+  res.send(response);
+})
+app.get("/DeleteUser/:UserId", async (req, res) => {
+  const response = await DeleteUser(req.params.UserId);
+  res.send(response);
+})
 io.on('connection', (socket) => {
   
   console.log('a user connected');

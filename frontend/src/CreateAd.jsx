@@ -31,7 +31,7 @@ async function HandleCreateAd(country, dropdownvalue, images, userId) {
         console.log("sent !")
         let data = await response.json();
         if (data.success === true){
-            window.location.href = `/${country}/product/${data.product_id}`
+            window.location.href = `/${country}/my-ads/`
         }
     } else {
         document.querySelector(".error").textContent = "missing fields (make sure you upload an image)"

@@ -59,7 +59,7 @@ export default function Conversations(){
             <NavBar country={country} />
             <div className="py-20">
                 {
-                    conversations.length > 0 && 
+                    conversations.length > 0 ? 
                     conversations.map((conversation, index)=> {
                         return (
                             <div key={index} className="w-full flex items-center justify-center flex-col">
@@ -67,6 +67,10 @@ export default function Conversations(){
                             </div>
                         )
                     })
+                    :
+                    (
+                        <div className="text-center text-6xl text-white font-bold">No Conversation Started !</div>
+                    )
                 }
             </div>
         </div>

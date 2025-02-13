@@ -9,6 +9,7 @@ export default function FeaturedProducts(){
         async function fetchCategories(){
             let data = await fetch(`${import.meta.env.VITE_BACKEND_URL}/getCategories`)
             data = await data.json()
+            console.log(data)
             setCategories(data)
         }
         fetchCategories();    
@@ -18,7 +19,11 @@ export default function FeaturedProducts(){
             {
                 categories.map((category,index) => {
                     if (category.products.length === 0) return null;
-                    const shuffledProducts = category.products.sort(() => Math.random() - 0.5);
+                    const ActiveProducts = category.promos.filter(product => product.active === true)
+                    const shuffledProducts = ActiveProducts.sort(() => Math.random() - 0.5);
+                    if (ActiveProducts.length === 0) {
+                        return 
+                    }
                     return(
                         
                         <div  key={index} className="py-8">
@@ -26,6 +31,7 @@ export default function FeaturedProducts(){
                             <div className="flex items-center justify-around">
                                 {
                                     shuffledProducts.slice(0, 4).map((product, index) => {
+                                        
                                         return(
                                             <Product key={index} data={product}/>
                                         )

@@ -80,7 +80,9 @@ export default function ProductPage(){
     },[owner])
 
     document.title = "Ads4me - " + product.name
-
+    if (product.active === false) {
+        window.location.href = `/${country}/`
+    }
     return (
         <div className='w-full '>
             <NavBar country={country}/>

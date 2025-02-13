@@ -21,6 +21,7 @@ async function deleteAd(product_id){
 function Product(data){
     const { country } = useParams();
     let new_data = data.data
+    console.log(new_data.active)
     const [image, setImage] = useState("")
     const [timeago, setTimeAgo] = useState("")
     
@@ -43,11 +44,13 @@ function Product(data){
     },[])
     return (
         
-            <div className="relative rounded-lg overflow-hidden flex flex-row items-center max-w-[800px] h-48 border border-gray-500">
+            <div className="relative rounded-lg overflow-hidden flex flex-row items-center max-w-[800px] h-52 border border-gray-500">
+                
                 <div className="overflow-hidden flex items-center justify-center w-[80%]">
                     <img src={`${import.meta.env.VITE_BACKEND_URL}/${image}`} alt={new_data.name} className="w-full  hover:scale-105 transition-all duration-300" />
                 </div>
                 <div className="relative w-full p-4 h-full">
+                    
                     <p className="font-semibold text-white">{new_data.price} USD</p>
                     <h4 className="text-xl font-bold line-clamp-1 text-white w-80">{new_data.name}</h4>
                     <p className="line-clamp-2 text-md leading-tight font-medium text-white w-80">{new_data.description}</p>
@@ -57,7 +60,9 @@ function Product(data){
                     </div>
                 </div>
                 <div className="absolute top-0 right-0 flex flex-col mx-4 gap-2 h-full justify-center items-center">
+                    <div className="text-white font-semibold" title={`${new_data.active ? "listed in the market" : "this listing is under admin review"}`}>Status: <span className={`${new_data.active ? "text-green-600" : "text-red-600"}`}>{new_data.active ? "active" : "inactive"}</span></div>
                     <button className="bg-green-600 rounded-lg w-22 h-8 font-semibold cursor-pointer text-white" onClick={() => { window.location.href = `/${country}/product/${new_data.product_id}` }}>Preview</button>
+                    <button className="bg-green-700 rounded-lg w-22 h-8 font-semibold cursor-pointer text-white" onClick={() => { window.location.href = `/promote/${new_data.product_id}` }}>Promote</button>
                     <button className="bg-blue-600 rounded-lg w-22 h-8 font-semibold cursor-pointer text-white" onClick={() => { window.location.href = `/${country}/edit/${new_data.product_id}` }}>Edit</button>
                     <button className="bg-red-600 rounded-lg w-22 h-8 font-semibold cursor-pointer text-white" onClick={() => { deleteAd(new_data.product_id)}}>Delete</button>
                 </div>
