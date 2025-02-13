@@ -19,7 +19,7 @@ export default function AdminSide({  page }) {
             <div onClick={() => {window.location.href = "/admin/Plans"}} className={`text-white/30 hover:text-white/80 transition-all duration-500 cursor-pointer h-18 items-center font-bold text-xl flex gap-2  ${page === "Plans" ? "text-white/70": ""}`}>
                 <i className="fa-solid fa-money-bill"></i>Plans
             </div>
-            <div onClick={() => {window.location.href = "/admin/Promos"}} className={`text-white/30 hover:text-white/80 transition-all duration-500 cursor-pointer h-18 items-center font-bold text-xl flex gap-2  ${page === "Subs" ? "text-white/70": ""}`}>
+            <div onClick={() => {window.location.href = "/admin/Promos"}} className={`text-white/30 hover:text-white/80 transition-all duration-500 cursor-pointer h-18 items-center font-bold text-xl flex gap-2  ${page === "Promos" ? "text-white/70": ""}`}>
                 <i className="fa-solid fa-dollar-sign"></i>Promotions
             </div>
         </div>

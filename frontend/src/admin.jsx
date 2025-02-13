@@ -170,14 +170,14 @@ async function SavePlan(){
         const description = descriptions[i].value;
         const price = prices[i].value;
         const Features = AllFeatures[i].value;
-        const Expiring = new Date(Expirings[i].value).toISOString();
+        const Expiring = Expirings[i].value;
         const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/savePlan`, {
             method: "POST",
             headers: {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                name: name, description: description, price: price, Features: Features, Expiring: Expiring
+                name: name, description: description, price: price, Features: Features, active_days: Expiring
             })
         })
         const data = await response.json();
@@ -255,7 +255,7 @@ function HandleCreatePlan() {
 
     const ExpiringTd = document.createElement("td");
     const ExpiringInput = document.createElement("input");
-    ExpiringInput.type = "date"
+    ExpiringInput.placeholder = "Active Days"
     ExpiringInput.classList.add("plan-Expiring")
     ExpiringInput.style.textAlign = "center";
     ExpiringInput.style.width = "100%";
@@ -383,7 +383,7 @@ export default function AdminPage() {
         async function getPromos() {
             const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/getPromos`);
             const data = await response.json();
-            console.log(data)
+            setPromos(data)
         }
         getPromos();
     }, [])
@@ -549,7 +549,7 @@ export default function AdminPage() {
                                             </th>
                                             <th className="w-[10%]">Price (USD)</th>
                                             <th className="w-[20%]">Features</th>
-                                            <th className="w-[10%]">Expiring : </th>
+                                            <th className="w-[10%]">Days of promotion</th>
                                             <th className="w-[10%]">
                                                 Delete ?
                                             </th>
@@ -564,7 +564,7 @@ export default function AdminPage() {
                                                         <td>{plan.description}</td>
                                                         <td>{plan.price}</td>
                                                         <td>{plan.features}</td>
-                                                        <td>{new Date(plan.expiring_at).toLocaleDateString()}</td>
+                                                        <td>{plan.active_days}</td>
                                                         <td>
                                                             <div className="flex items-center justify-center">
                                                                 <img src="/trash.png" className="size-8 cursor-pointer" onClick={(e) => DeletePlan(e)} />
@@ -592,6 +592,43 @@ export default function AdminPage() {
                     page === "Promos" && (
                         <div>
                             <h1 className="text-4xl font-bold text-white mb-8">Promotions</h1>
+                            <div className="w-full flex flex-col items-center justify-center gap-4">
+                                <table className="relative w-full text-white [&_td]:p-3 [&_th]:p-2 text-center border [&_td]:border">
+                                    <thead>
+                                        <tr>
+                                            <th className="w-[20%]">
+                                                ad_id
+                                            </th>
+                                            <th className="w-[30%]">
+                                                amount
+                                            </th>
+                                            <th className="w-[10%]">buying date</th>
+                                            <th className="w-[20%]">expiring data</th>
+                                            <th className="w-[10%]">package</th>
+                                            <th className="w-[10%]">
+                                                Method
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className="plans">
+                                        {
+                                            promos.length > 0 && promos.map((promo, index) => {
+                                                return (
+                                                    <tr key={index} id={promo.ad_id}>
+                                                        <td>{promo.ad_id}</td>
+                                                        <td>{promo.amount / 1000} USD</td>
+                                                        <td>{new Date(promo.bought_at).toLocaleDateString()}</td>
+                                                        <td>{new Date(promo.expiring_at).toLocaleDateString()}</td>
+                                                        <td>{promo.package}</td>
+                                                        <td>{promo.pay_method}</td>	
+                                                        
+                                                    </tr>
+                                                )
+                                            })
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     )
                 }

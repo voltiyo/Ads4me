@@ -468,7 +468,7 @@ export async function CreateCategory(name,description) {
 export async function CreatePlan(name, description, price, Features, Expiring) {
   try {
     const client = await pool.connect();
-    await client.query("INSERT INTO plans (name, description, price, features, expiring_at) VALUES ($1, $2, $3, $4, $5)", [name, description, price, Features, Expiring]);
+    await client.query("INSERT INTO plans (name, description, price, features, active_days) VALUES ($1, $2, $3, $4, $5)", [name, description, price, Features, Expiring]);
     await client.release();
     
     return { success: true };

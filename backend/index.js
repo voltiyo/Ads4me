@@ -76,7 +76,7 @@ app.post("/saveCategory", async (req, res) => {
 })
 
 app.post("/savePlan", async (req, res) => {
-  const response = await CreatePlan(req.body.name, req.body.description, req.body.price, req.body.Features, req.body.Expiring)
+  const response = await CreatePlan(req.body.name, req.body.description, req.body.price, req.body.Features, req.body.active_days)
   res.send(response)
 })
 app.get("/getPlans", async (req, res) => {
